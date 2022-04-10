@@ -1,0 +1,111 @@
+{:annotation-attrs
+ [{:db/ident :cartographer/entity,
+   :db/valueType :db.type/keyword,
+   :db/unique :db.unique/identity,
+   :db/cardinality :db.cardinality/one,
+   :db/doc
+   "Creating an entity with this attr will cause its value to be considered an entity-grouping namespace in the application."}
+  {:db/ident :cartographer/enumeration,
+   :db/valueType :db.type/keyword,
+   :db/unique :db.unique/identity,
+   :db/cardinality :db.cardinality/one,
+   :db/doc
+   "Creating an entity with this attr will cause its value to be considered an enumeration-grouping namespace in the application."}
+  {:db/ident :cartographer/deprecated?,
+   :db/valueType :db.type/boolean,
+   :db/cardinality :db.cardinality/one,
+   :db/doc "Boolean flag indicating the field has been deprecated."}
+  {:db/ident :cartographer/replaced-by,
+   :db/valueType :db.type/ref,
+   :db/cardinality :db.cardinality/many,
+   :db/doc
+   "Used to document when a deprecated field is replaced by other."}
+  {:db/ident :cartographer/references-namespaces,
+   :db/valueType :db.type/ref,
+   :db/cardinality :db.cardinality/many,
+   :db/doc
+   "Used to indicate which specific :cartographer/entity or :cartographer/enumeration are intended to be referenced by :db.type/ref"}
+  {:db/ident :cartographer/validates-namespace,
+   :db/valueType :db.type/ref,
+   :db/cardinality :db.cardinality/one,
+   :db/doc
+   "Used to indicate which specific :cartographer/entity is intended to be validated by :db.type/ref"}],
+ :db-schema-attrs
+ [{:db/id ":cartographer.enumeration/department",
+   :cartographer/enumeration :department,
+   :db/doc "department the employee belongs to"}
+  {:db/id ":department/engineering",
+   :db/ident :department/engineering,
+   :db/doc "Engineering"}
+  {:db/id ":department/marketing",
+   :db/ident :department/marketing,
+   :db/doc "Marketing"}
+  {:db/id ":department/hr",
+   :db/ident :department/hr,
+   :db/doc "Human Resources"}
+  {:db/id ":department/legal",
+   :db/ident :department/legal,
+   :db/doc "Legal"}
+  {:db/id ":cartographer.entity/employee",
+   :cartographer/entity :employee,
+   :db/doc "an employee"}
+  {:db/id ":employee/email",
+   :db/ident :employee/email,
+   :db/doc "Email address",
+   :db/valueType {:db/ident :db.type/string},
+   :db/cardinality {:db/ident :db.cardinality/one},
+   :db/unique {:db/ident :db.unique/identity}}
+  {:db/id ":employee/name",
+   :db/ident :employee/name,
+   :db/doc "employee name reference",
+   :db/valueType {:db/ident :db.type/ref},
+   :db/cardinality {:db/ident :db.cardinality/one},
+   :cartographer/references-namespaces [":cartographer.entity/name"]}
+  {:db/id ":employee/phone",
+   :db/ident :employee/phone,
+   :db/doc "Phone number",
+   :db/valueType {:db/ident :db.type/string},
+   :db/cardinality {:db/ident :db.cardinality/one}}
+  {:db/id ":employee/picture",
+   :db/ident :employee/picture,
+   :db/doc "employee picture reference",
+   :db/valueType {:db/ident :db.type/ref},
+   :db/cardinality {:db/ident :db.cardinality/one},
+   :cartographer/references-namespaces
+   [":cartographer.entity/picture"]}
+  {:db/id ":cartographer.entity/name",
+   :cartographer/entity :name,
+   :db/doc "employee names"}
+  {:db/id ":name/first",
+   :db/ident :name/first,
+   :db/doc "employee first name",
+   :db/valueType {:db/ident :db.type/string},
+   :db/cardinality {:db/ident :db.cardinality/one}}
+  {:db/id ":name/last",
+   :db/ident :name/last,
+   :db/doc "employee last name",
+   :db/valueType {:db/ident :db.type/string},
+   :db/cardinality {:db/ident :db.cardinality/one}}
+  {:db/id ":name/title",
+   :db/ident :name/title,
+   :db/doc "employee title",
+   :db/valueType {:db/ident :db.type/string},
+   :db/cardinality {:db/ident :db.cardinality/one}}
+  {:db/id ":cartographer.entity/picture",
+   :cartographer/entity :picture,
+   :db/doc "employee pictures"}
+  {:db/id ":picture/large",
+   :db/ident :picture/large,
+   :db/doc "large string uri",
+   :db/valueType {:db/ident :db.type/uri},
+   :db/cardinality {:db/ident :db.cardinality/one}}
+  {:db/id ":picture/medium",
+   :db/ident :picture/medium,
+   :db/doc "medium picture size uri",
+   :db/valueType {:db/ident :db.type/uri},
+   :db/cardinality {:db/ident :db.cardinality/one}}
+  {:db/id ":picture/small",
+   :db/ident :picture/small,
+   :db/doc "small picture uri",
+   :db/valueType {:db/ident :db.type/uri},
+   :db/cardinality {:db/ident :db.cardinality/one}}]}
