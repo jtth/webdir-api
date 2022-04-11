@@ -1,5 +1,5 @@
 (ns webdir-api.service
-  (:require [io.pedestal.http :as bootstrap]
+  (:require [io.pedestal.http :as http]
             [io.pedestal.interceptor.chain :refer [terminate]]
             [io.pedestal.interceptor :refer [interceptor]]
             [pedestal-api.core :as api]
@@ -56,31 +56,36 @@
              :body   employee})
 
 (def update-employee
-  (before
-    ::update-employee
-    {:summary    "Update an employee"
+  (api/annotate
+    {:summary    "Update an employee by id"
      :parameters {:path-params {:id s/Int}
                   :body-params Employee}
-     :responses  {200 {:body s/Str}}}
-    (fn [{:keys [request]}]
-      (let [employee-id (get-in request [:path-params :id])]
-        (swap! the-employees update employee-id merge (:body-params request))
-        {:status 200
-         :body   (str "employee " employee-id " updated")}))))
+     :responses  {200 {:body {:message s/Str}}}}
+    (interceptor
+      {:name  ::update-employee
+       :enter (fn [ctx]
+                (let [employee-id (get-in ctx [:request :path-params :id])
+                      updated-employee (get-in ctx [:request :body-params])]
+                  (swap! the-employees update employee-id merge updated-employee)
+                  (assoc ctx :response
+                             {:status 200
+                              :body   {:message (str "Updated employee " employee-id)}})))})))
+
 
 (def delete-employee
   (api/annotate
     {:summary    "Delete an employee by id"
      :parameters {:path-params {:id s/Int}}
-     :responses  {200 {:body s/Str}}}
+     :responses  {200 {:body {:message s/Str}}}}
     (interceptor
       {:name  ::delete-employee
        :enter (fn [ctx]
-                (let [employee (get-in ctx [:request :employee])]
-                  (swap! the-employees dissoc (:id employee))
+                (let [employee (get-in ctx [:request :employee])
+                      employee-id (:id employee)]
+                  (swap! the-employees dissoc employee-id)
                   (assoc ctx :response
                              {:status 200
-                              :body   (str "Deleted " (:name employee))})))})))
+                              :body   {:message (str "Deleted " employee-id)}})))})))
 
 (def no-csp
   {:name  ::no-csp
@@ -90,7 +95,7 @@
 (s/with-fn-validation
   (api/defroutes routes
                  {:info {:title       "Postlight employee directory api using pedestal-api"
-                         :description "https://github.com/oliyh/pedestal-api"
+                         :description "by Jordan Thevenow-Harrison"
                          :version     "1.0"}
                   :tags [{:name         "employees"
                           :description  "Everything about your employees"
@@ -116,15 +121,15 @@
                     ["/*resource" ^:interceptors [no-csp] {:get api/swagger-ui}]]]]))
 
 (def service
-  {:env                        :dev
-   ::bootstrap/routes          #(deref #'routes)
+  {:env                   :dev
+   ::http/routes          #(deref #'routes)
    ;; linear-search, and declaring the swagger-ui handler last in the routes,
-   ;; is important to avoid the splat param for the UI matching API routes
-   ::bootstrap/router          :linear-search
-   ::bootstrap/resource-path   "/public"
-   ::bootstrap/type            :jetty
-   ::bootstrap/allowed-origins {:allowed-origins (constantly true)
-                                :creds           true}
-   ::bootstrap/port            8080
-   ::bootstrap/host            "0.0.0.0"                    ;; bind to all interfaces
-   ::bootstrap/join?           false})
+   ;;    is important to avoid the splat param for the UI matching API routes
+   ::http/router          :linear-search
+   ::http/resource-path   "/public"
+   ::http/type            :jetty
+   ::http/allowed-origins {:allowed-origins (constantly true)
+                           :creds           true}
+   ::http/port            8080
+   ::http/host            "0.0.0.0"                         ;; bind to all interfaces
+   ::http/join?           false})
