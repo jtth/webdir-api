@@ -1,9 +1,15 @@
-{:deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        org.clojure/data.json {:mvn/version "2.4.0"}
-        pedestal-api/pedestal-api {:mvn/version "0.3.6-20210212.231501-2" :exclusions [prismatic/schema]}
-        io.pedestal/pedestal.service {:mvn/version "0.5.10"}
-        io.pedestal/pedestal.jetty {:mvn/version "0.5.10"}
-        prismatic/schema {:mvn/version "1.2.0"}
-        org.clojure/tools.logging {:mvn/version "1.2.4"}
-        org.slf4j/slf4j-simple {:mvn/version "1.7.36"}}
- :paths ["src"]}
+{:deps    {org.clojure/clojure          {:mvn/version "1.11.1"}
+           org.clojure/data.json        {:mvn/version "2.4.0"}
+           pedestal-api/pedestal-api    {:mvn/version "0.3.6-20210212.231501-2" :exclusions [prismatic/schema]}
+           io.pedestal/pedestal.service {:mvn/version "0.5.10"}
+           io.pedestal/pedestal.jetty   {:mvn/version "0.5.10"}
+           prismatic/schema             {:mvn/version "1.2.0"}
+           org.clojure/tools.logging    {:mvn/version "1.2.4"}
+           org.slf4j/slf4j-simple       {:mvn/version "1.7.36"}}
+ :paths   ["src"]
+ :aliases {:build {:deps       {io.github.seancorfield/build-clj
+                                {:git/tag "v0.8.0" :git/sha "9bd8b8a"}}
+                   :ns-default build}}}
+
+
+
