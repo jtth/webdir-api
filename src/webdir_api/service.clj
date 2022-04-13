@@ -96,7 +96,7 @@
 (defn home-page
   [request]
   (-> (ring-resp/response
-        (str (slurp "resources/public/index.html")))
+        (str (slurp (clojure.java.io/resource "public/index.html"))))
       (ring-resp/content-type "text/html")))
 
 
