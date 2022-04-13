@@ -5,7 +5,8 @@
             [pedestal-api.core :as api]
             [pedestal-api.helpers :refer [before defbefore defhandler handler]]
             [schema.core :as s]
-            [webdir-api.db :as db :refer [the-employees Name Picture Employee EmployeeID EmployeeWithId EmployeesList]]))
+            [webdir-api.db :as db :refer [the-employees Name Picture Employee EmployeeID EmployeeWithId EmployeesList]]
+            [ring.util.response :as ring-resp]))
 
 
 (def all-employees
@@ -92,6 +93,13 @@
    :leave (fn [ctx]
             (assoc-in ctx [:response :headers "Content-Security-Policy"] ""))})
 
+(defn home-page
+  [request]
+  (-> (ring-resp/response
+        (str (slurp "resources/public/index.html")))
+      (ring-resp/content-type "text/html")))
+
+
 (s/with-fn-validation
   (api/defroutes routes
                  {:info {:title       "Postlight employee directory api using pedestal-api"
@@ -103,7 +111,8 @@
                                          :url         "https://jtth.net"}}
                          {:name        "employees"
                           :description "Operations about employees"}]}
-                 [[["/api" ^:interceptors [api/error-responses
+                 [[["/" ^:interceptors [http/html-body] {:get `home-page}]
+                   ["/api" ^:interceptors [api/error-responses
                                            (api/negotiate-response)
                                            (api/body-params)
                                            api/common-body
@@ -121,12 +130,21 @@
                     ["/*resource" ^:interceptors [no-csp] {:get api/swagger-ui}]]]]))
 
 (def service
-  {:env                   :dev
+  {:env                   :prod
    ::http/routes          #(deref #'routes)
    ;; linear-search, and declaring the swagger-ui handler last in the routes,
    ;;    is important to avoid the splat param for the UI matching API routes
    ::http/router          :linear-search
-   ::http/resource-path   "/public"
+   ::http/resource-path   "public"
+   ;; CSPs for Angular
+   ::http/secure-headers  {:content-security-policy-settings
+                           {:object-src  "'none'"
+                            :default-src "'self'"
+                            :script-src  "'self' 'unsafe-inline'"
+                            :style-src   "'self' 'unsafe-inline'"
+                            :font-src    "'self'"
+                            :img-src     "* data:"
+                            :connect-src "'self'"}}
    ::http/type            :jetty
    ::http/allowed-origins {:allowed-origins (constantly true)
                            :creds           true}

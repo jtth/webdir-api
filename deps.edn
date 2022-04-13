@@ -6,7 +6,7 @@
            prismatic/schema             {:mvn/version "1.2.0"}
            org.clojure/tools.logging    {:mvn/version "1.2.4"}
            org.slf4j/slf4j-simple       {:mvn/version "1.7.36"}}
- :paths   ["src"]
+ :paths   ["src", "resources"]
  :aliases {:build {:deps       {io.github.seancorfield/build-clj
                                 {:git/tag "v0.8.0" :git/sha "9bd8b8a"}}
                    :ns-default build}}}
