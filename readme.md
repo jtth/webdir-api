@@ -1,3 +1,7 @@
+# Note
+
+This is a copy of the readme included in the `jtth-interview` zip file. It references files contained in the repos [webdir-api](https://github.com/jtth/webdir-api) and [webdir-spa](https://github.com/jtth/webdir-spa).
+
 # Introduction
 
 Hello. In this directory you'll find two projects with git repos. `webdir-spa` is an Angular SPA that communicates with `webdir-api`, the API built on Pedestal using the Jetty web server. 
